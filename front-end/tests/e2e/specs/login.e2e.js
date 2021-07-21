@@ -8,7 +8,7 @@ module.exports = {
       .url(process.env.VUE_DEV_SERVER_URL + 'login')
       .waitForElementVisible('#app')
       // .assert.elementPresent('.hello')
-      //.assert.containsText('h1', 'Login')
+      // .assert.containsText('h1', 'Login')
       .assert.elementCount('img', 0)
       .end()
   },
