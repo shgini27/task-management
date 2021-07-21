@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### SQL Files ###
+*.sql
+
+### Spring Boot Dev Config ###
+src/main/resources/application-dev.properties
