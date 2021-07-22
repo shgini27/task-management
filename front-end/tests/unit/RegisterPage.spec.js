@@ -1,11 +1,14 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import VueRouter from 'vue-router'
+import Vuelidate from 'vuelidate'
+import registrationService from '@/services/registration'
 import RegisterPage from '@/views/RegisterPage'
 
 // Adding vue router to test that
 // we can access vm.$router
 const localVue = createLocalVue()
 localVue.use(VueRouter)
+localVue.use(Vuelidate)
 
 // We need router to check if we
 // can redirect to login page
@@ -21,6 +24,8 @@ describe('RegisterPage.vue', () => {
   let fieldPassword
   let submitButton
 
+  let registerSpy
+
   beforeEach(() => {
     wrapper = shallowMount(RegisterPage, {
       localVue,
@@ -31,6 +36,13 @@ describe('RegisterPage.vue', () => {
     fieldEmail = wrapper.find('#emailAddress')
     fieldPassword = wrapper.find('#password')
     submitButton = wrapper.find('form button[type="submit"]')
+
+    registerSpy = jest.spyOn(registrationService, 'register')
+  })
+
+  afterEach(() => {
+    registerSpy.mockReset()
+    registerSpy.mockRestore()
   })
 
   afterAll(() => {
@@ -80,25 +92,54 @@ describe('RegisterPage.vue', () => {
     expect(stub).toBeCalled()
   })
 
-  it('should register wht it is a new User', async () => {
+  it('should register when it is a new User', async () => {
+    expect.assertions(2)
     const stub = jest.fn()
 
     wrapper.vm.$router.push = stub
-    wrapper.vm.form.username = 'tigr'
-    wrapper.vm.form.emailAddress = 'tigr@ttweb.org'
-    wrapper.vm.form.password = 'Tigr@1996'
+
+    await wrapper.setData({
+      form: {
+        username: 'tigr',
+        emailAddress: 'bulat@ttweb.org',
+        password: 'Tigr@1996'
+      }
+    })
+
     wrapper.vm.submitForm()
+    expect(registerSpy).toBeCalled()
     await wrapper.vm.$nextTick(() => {
       expect(stub).toHaveBeenCalledWith({ name: 'LoginPage' })
     })
   })
 
   it('should fail if it is not a new User', async () => {
-    wrapper.vm.form.emailAddress = 'bulat@ttweb.org'
+    expect.assertions(3)
+
+    await wrapper.setData({
+      form: {
+        username: 'bulat',
+        emailAddress: 'bulat@ttweb.org',
+        password: 'Bulat@1996'
+      }
+    })
+
     expect(wrapper.find('.failed').isVisible()).toBe(false)
     wrapper.vm.submitForm()
-    await wrapper.vm.$nextTick(null, () => {
+    expect(registerSpy).toBeCalled()
+    await wrapper.vm.$nextTick(() => {
       expect(wrapper.find('.failed').isVisible()).toBe(true)
     })
+  })
+
+  it('should fail when the email address is invalid',  () => {
+    wrapper.setData({
+      form: {
+        emailAddress: 'bad-email-address'
+      }
+    })
+
+    wrapper.vm.submitForm()
+    expect(registerSpy).not.toHaveBeenCalled()
   })
 })
