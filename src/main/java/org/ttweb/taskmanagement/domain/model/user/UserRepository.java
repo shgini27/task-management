@@ -3,7 +3,7 @@ package org.ttweb.taskmanagement.domain.model.user;
 /**
  * User repository interface
  */
-public interface UserRepository {
+public interface UserRepository{
 
     /**
      * Find user by a username

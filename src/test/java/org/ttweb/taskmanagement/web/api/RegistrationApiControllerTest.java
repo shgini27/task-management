@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.ttweb.taskmanagement.config.SecurityConfiguration;
 import org.ttweb.taskmanagement.domain.application.UserService;
 import org.ttweb.taskmanagement.domain.model.user.EmailAddressExistsException;
 import org.ttweb.taskmanagement.domain.model.user.UsernameExistsException;
@@ -24,7 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(RegistrationApiController.class)
+@ContextConfiguration(classes = {SecurityConfiguration.class, RegistrationApiController.class})
+@ActiveProfiles("test")
+@WebMvcTest
 public class RegistrationApiControllerTest {
     @Autowired
     private MockMvc mvc;
@@ -50,7 +55,7 @@ public class RegistrationApiControllerTest {
 
         mvc.perform(post("/api/registrations")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(JsonUtils.toJson(payload)))
+        .content(Objects.requireNonNull(JsonUtils.toJson(payload))))
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.message").value("Username already exist"));
     }
