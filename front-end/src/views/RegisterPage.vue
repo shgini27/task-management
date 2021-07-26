@@ -2,10 +2,7 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="register-form">
-        <div class="logo-wrapper">
-          <img class="logo" src="/static/images/logo.png">
-          <div class="tagline">Task Management</div>
-        </div>
+        <Logo/>
         <form @submit.prevent="submitForm">
           <div v-show="errorMessage" class="alert alert-danger failed">
             {{ errorMessage }}
@@ -29,23 +26,15 @@
         </form>
       </div>
     </div>
-    <footer class="footer">
-      <span class="copyright">&copy; 2021 ttweb.org </span>
-      <ul class="footer-links list-inline float-right">
-        <li class="list-inline-item"><a href="#">About</a></li>
-        <li class="list-inline-item"><a href="#">Terms of Service</a></li>
-        <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
-        <li class="list-inline-item"><a href="https://ttranzit.visualstudio.com/task-management"
-                                        target="_blank">Azure</a>
-        </li>
-      </ul>
-    </footer>
+    <PageFooter/>
   </div>
 </template>
 
 <script>
 import registrationService from '@/services/registration'
 import { required, email, minLength, maxLength, alphaNum } from 'vuelidate/lib/validators'
+import PageFooter from '@/components/PageFooter'
+import Logo from '@/components/Logo'
 
 export default {
   name: 'RegisterPage',
@@ -58,6 +47,10 @@ export default {
       },
       errorMessage: ''
     }
+  },
+  components: {
+    Logo,
+    PageFooter
   },
   validations: {
     form: {
@@ -91,7 +84,7 @@ export default {
         })
         .catch((error) => {
           this.errorMessage = 'Failed to register user. Reason: ' +
-                (error.message ? error.message : 'Unknown')
+                            (error.message ? error.message : 'Unknown')
         })
     }
   }

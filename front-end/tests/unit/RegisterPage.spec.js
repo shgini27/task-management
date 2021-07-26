@@ -132,7 +132,7 @@ describe('RegisterPage.vue', () => {
     })
   })
 
-  it('should fail when the email address is invalid',  () => {
+  it('should fail when the email address is invalid', () => {
     wrapper.setData({
       form: {
         emailAddress: 'bad-email-address'
