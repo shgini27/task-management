@@ -1,9 +1,10 @@
 package org.ttweb.taskmanagement.domain.application;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.ttweb.taskmanagement.domain.application.commands.RegistrationCommand;
 import org.ttweb.taskmanagement.domain.model.user.RegistrationException;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     /**
      * Register a new user with username, email address, and password.
      *
