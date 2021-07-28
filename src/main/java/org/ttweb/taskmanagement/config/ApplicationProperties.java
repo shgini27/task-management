@@ -2,18 +2,19 @@ package org.ttweb.taskmanagement.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Configuration
 @ConfigurationProperties(prefix = "app")
-@Validated
+@Valid
 public class ApplicationProperties {
     /**
      * Default `from` value of emails sent out by the system
      */
+    //@Valid
     @Email
     @NotBlank
     private String mailFrom;

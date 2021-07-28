@@ -43,7 +43,7 @@ describe('services/registration', () => {
   it('should call `/registrations` API', () => {
     expect.assertions(1)
     moxios.wait(() => {
-      let request = moxios.requests.mostRecent()
+      const request = moxios.requests.mostRecent()
       expect(request.url).toEqual('/registrations')
       request.respondWith({
         status: 200,

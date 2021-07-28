@@ -39,7 +39,7 @@ module.exports = {
     const homePage = browser.page.HomePage()
     loginPage
       .navigate()
-      .login(data.username, data.password)
+      .login('tigr', 'Tigr@1986')
 
     browser.pause(2000)
 
