@@ -37,8 +37,8 @@
     </div>
     <CreateBoardModal
       :teamId="selectedTeamId"
-      @created="onBoardCreated">
-    </CreateBoardModal>
+      @created="onBoardCreated"/>
+    <CreateTeamModal />
   </div>
 </template>
 
@@ -46,7 +46,7 @@
 // @ is an alias to /src
 import $ from 'jquery'
 import PageHeader from '@/components/PageHeader'
-import CreateBoardModel from '@/components/CreateBoardModal'
+import CreateBoardModal from '@/components/CreateBoardModal'
 import CreateTeamModal from '@/components/CreateTeamModal'
 import { mapGetters } from 'vuex'
 
@@ -65,7 +65,7 @@ export default {
   },
   components: {
     PageHeader,
-    CreateBoardModel,
+    CreateBoardModal,
     CreateTeamModal
   },
   methods: {

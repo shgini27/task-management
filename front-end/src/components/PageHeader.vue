@@ -50,6 +50,8 @@
 
 <script>
 import 'bootstrap/dist/js/bootstrap.min'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'PageHeader',
   computed: {
