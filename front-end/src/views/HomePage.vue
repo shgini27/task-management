@@ -46,8 +46,8 @@
 // @ is an alias to /src
 import $ from 'jquery'
 import PageHeader from '@/components/PageHeader'
-import CreateBoardModal from '@/components/CreateBoardModal'
-import CreateTeamModal from '@/components/CreateTeamModal'
+import CreateBoardModal from '@/modals/CreateBoardModal'
+import CreateTeamModal from '@/modals/CreateTeamModal'
 import { mapGetters } from 'vuex'
 
 export default {

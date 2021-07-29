@@ -1,7 +1,7 @@
 <template>
   <div class="logo-wrapper">
     <img class="logo" src="../assets/logo.png">
-    <div class="tagline">Task Management</div>
+    <div class="tagline">{{ $t("logo.tagLine") }}</div>
   </div>
 </template>
 

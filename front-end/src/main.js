@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import Vuelidate from 'vuelidate'
+import { i18n } from './i18n'
 
 // Bootstrap axios
 axios.defaults.baseURL = '/api'
@@ -22,5 +23,6 @@ Vue.use(Vuelidate)
 new Vue({
   router,
   store,
+  i18n,
   render: h => h(App)
 }).$mount('#app')

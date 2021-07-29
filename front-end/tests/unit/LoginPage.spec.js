@@ -3,6 +3,7 @@ import Vuelidate from 'vuelidate'
 import VueRouter from 'vue-router'
 import LoginPage from '@/views/LoginPage.vue'
 import authenticationService from '@/services/authentication'
+import { i18n } from '@/i18n'
 
 // Setup local Vue with Vuelidate
 const localVue = createLocalVue()
@@ -23,7 +24,8 @@ describe('LoginPage.vue', () => {
   beforeEach(() => {
     wrapper = shallowMount(LoginPage, {
       localVue,
-      router
+      router,
+      i18n
     })
     fieldUsername = wrapper.find('#username')
     fieldPassword = wrapper.find('#password')

@@ -2,7 +2,7 @@
   <div class="page-header d-flex align-content-center">
     <div class="logo" @click="goHome()">
       <font-awesome-icon icon="home" class="home-icon" />
-      <img src="/images/logo.png">
+      <img src="../assets/logo.png">
     </div>
     <div class="boards-menu-toggle">
       <div class="dropdown">
@@ -15,7 +15,7 @@
             No Board
           </div>
           <div v-show="hasBoards">
-            <h6 class="dropdown-header" v-show="personalBoards.length">Personal Boards</h6>
+            <h6 class="dropdown-header" v-show="personalBoards.length">{{ $t("header.personalBoards") }}</h6>
             <button v-for="board in personalBoards" :key="board.id" @click="openBoard(board)"
                     class="dropdown-item" type="button">{{ board.name }}</button>
             <div v-for="team in teamBoards" :key="'t' + team.id">

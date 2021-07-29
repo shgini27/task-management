@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Vuelidate from 'vuelidate'
 import registrationService from '@/services/registration'
 import RegisterPage from '@/views/RegisterPage'
+import { i18n } from '@/i18n'
 
 // Adding vue router to test that
 // we can access vm.$router
@@ -29,7 +30,8 @@ describe('RegisterPage.vue', () => {
   beforeEach(() => {
     wrapper = shallowMount(RegisterPage, {
       localVue,
-      router
+      router,
+      i18n
     })
 
     fieldUsername = wrapper.find('#username')

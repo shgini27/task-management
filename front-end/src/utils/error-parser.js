@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { i18n } from '@/i18n'
 
 export default {
   parse (error) {
@@ -12,7 +13,7 @@ export default {
           return new Error('Bad request')
         }
       } else if (status === 401) {
-        return new Error('Request not authorized.')
+        return new Error(i18n.t('error.request.notAuthorized'))
       } else if (status === 403) {
         return new Error('Request forbidden.')
       } else if (status === 404) {
