@@ -3,7 +3,7 @@
     <PageHeader/>
     <div class="boards-container">
       <div class="boards-section">
-        <h2 class="section-title">Personal Boards</h2>
+        <h2 class="section-title">{{ $t("homePage.personalBoards") }}</h2>
         <div class="boards d-flex align-content-center flex-wrap">
           <div class="board list-inline-item" v-for="board in personalBoards"
                v-bind:key="board.id" @click="openBoard(board)">
@@ -51,7 +51,7 @@ import CreateTeamModal from '@/modals/CreateTeamModal'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'Home',
+  name: 'HomePage',
   data () {
     return {
       selectedTeamId: 0

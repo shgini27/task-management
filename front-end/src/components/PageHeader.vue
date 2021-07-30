@@ -30,7 +30,7 @@
     <div class="search-box flex-fill">
       <div class="search-wrapper">
         <font-awesome-icon icon="search" class="search-icon" />
-        <input type="text" :placeholder="Search" class="form-control form-control-sm" />
+        <input type="text" :placeholder="$t('header.search')" class="form-control form-control-sm" />
       </div>
     </div>
     <div class="profile-menu-toggle">

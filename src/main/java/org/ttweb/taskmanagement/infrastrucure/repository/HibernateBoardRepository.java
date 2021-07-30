@@ -1,8 +1,10 @@
 package org.ttweb.taskmanagement.infrastrucure.repository;
 
 import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.ttweb.taskmanagement.domain.model.board.Board;
+import org.ttweb.taskmanagement.domain.model.board.BoardId;
 import org.ttweb.taskmanagement.domain.model.board.BoardRepository;
 import org.ttweb.taskmanagement.domain.model.user.UserId;
 
@@ -24,5 +26,12 @@ public class HibernateBoardRepository extends HibernateSupport<Board> implements
         NativeQuery<Board> query = getSession().createNativeQuery(sql, Board.class);
         query.setParameter("userId", userId);
         return query.list();
+    }
+
+    @Override
+    public Board findById(BoardId boardId) {
+        Query<Board> query = getSession().createQuery("from Board where id = :id", Board.class);
+        query.setParameter("id", boardId.value());
+        return query.uniqueResult();
     }
 }
