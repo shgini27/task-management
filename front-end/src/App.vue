@@ -8,25 +8,31 @@
   </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+<script>
+import 'bootstrap/dist/js/bootstrap.min'
+export default {
+  name: 'App',
+  created () {
+    this.$bus.$on('myDataFetched', myData => {
+      // Initializing the real time connection
+      this.$rt.init(myData.settings.realTimeServerUrl, myData.user.token)
+    })
   }
 }
+</script>
+<style lang="scss">
+  html, body {
+    height: 100%;
+    font-size: 14px;
+  }
+
+  #app, .page {
+    height: 100%;
+    position: relative;
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+  }
 </style>

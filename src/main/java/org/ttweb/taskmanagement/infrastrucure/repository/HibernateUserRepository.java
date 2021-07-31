@@ -3,12 +3,13 @@ package org.ttweb.taskmanagement.infrastrucure.repository;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.ttweb.taskmanagement.domain.model.user.User;
+import org.ttweb.taskmanagement.domain.model.user.UserId;
 import org.ttweb.taskmanagement.domain.model.user.UserRepository;
 
 import javax.persistence.EntityManager;
 
 @Repository
-public class HibernateUserRepository extends HibernateSupport
+public class HibernateUserRepository extends HibernateSupport<User>
         implements UserRepository {
     public HibernateUserRepository(EntityManager entityManager){
         super(entityManager);
@@ -33,8 +34,9 @@ public class HibernateUserRepository extends HibernateSupport
     }
 
     @Override
-    public void save(User user){
-        entityManager.persist(user);
-        entityManager.flush();
+    public User findById(UserId userId) {
+        Query<User> query = getSession().createQuery("from User where id = :id", User.class);
+        query.setParameter("id", userId.value());
+        return query.uniqueResult();
     }
 }

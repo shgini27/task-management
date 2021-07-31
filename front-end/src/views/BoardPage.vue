@@ -1,5 +1,6 @@
 <template>
   <div class="page">
+    <PageHeader />
     <div class="page-body">
       <div class="board-wrapper">
         <div class="board">

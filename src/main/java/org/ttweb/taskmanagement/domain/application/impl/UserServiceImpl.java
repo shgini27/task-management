@@ -54,6 +54,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findById(UserId userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
     public void register(RegistrationCommand command) throws RegistrationException {
         Assert.notNull(command, "Parameter `command` must not be null");
 
