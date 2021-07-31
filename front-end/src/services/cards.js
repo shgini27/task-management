@@ -1,16 +1,16 @@
 import axios from 'axios'
 import errorParser from '@/utils/error-parser'
-import eventBus from '@/event-bus'
 
 export default {
   /**
-   * Fetch current user's name, boards and teams
+   * Method to add new card
+   * @param detail
+   * @returns {Promise<unknown>}
    */
-  getMyData () {
+  add (detail) {
     return new Promise((resolve, reject) => {
-      axios.get('/me').then(({ data }) => {
+      axios.post('/cards', detail).then(({ data }) => {
         resolve(data)
-        eventBus.$emit('myDataFetched', data)
       }).catch((error) => {
         reject(errorParser.parse(error))
       })
@@ -18,12 +18,13 @@ export default {
   },
 
   /**
-   * Method to sign out from system
+   * Method to change positions of a cards
+   * @param positionChanges
    * @returns {Promise<unknown>}
    */
-  signOut () {
+  changePosition (positionChanges) {
     return new Promise((resolve, reject) => {
-      axios.post('/me/logout').then(({ data }) => {
+      axios.post('/cards/positions', positionChanges).then(({ data }) => {
         resolve(data)
       }).catch((error) => {
         reject(errorParser.parse(error))

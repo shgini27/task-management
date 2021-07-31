@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.ttweb.taskmanagement.domain.model.board.BoardId;
 import org.ttweb.taskmanagement.domain.model.card.Card;
 import org.ttweb.taskmanagement.utils.JsonUtils;
+import org.ttweb.taskmanagement.web.socket.SubscriptionHub;
 
 import java.util.HashMap;
 import java.util.Map;

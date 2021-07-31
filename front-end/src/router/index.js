@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
+import BoardPage from '@/views/BoardPage'
 
 Vue.use(VueRouter)
 
@@ -25,6 +26,11 @@ const routes = [
     // this generates a separate chunk (register.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "register" */ '@/views/RegisterPage.vue')
+  },
+  {
+    path: '/board/:boardId',
+    name: 'BoardPage',
+    component: BoardPage
   }
 ]
 

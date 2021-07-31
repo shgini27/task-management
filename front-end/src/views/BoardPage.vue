@@ -84,6 +84,10 @@ import draggable from 'vuedraggable'
 import $ from 'jquery'
 import PageHeader from '@/components/PageHeader.vue'
 import AddMemberModal from '@/modals/AddMemberModal.vue'
+import notify from '@/utils/notify'
+import boardService from '@/services/boards'
+import cardListService from '@/services/card-lists'
+import cardService from '@/services/cards'
 
 export default {
   name: 'BoardPage',
@@ -103,6 +107,240 @@ export default {
     PageHeader,
     AddMemberModal,
     draggable
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.loadBoard()
+    })
+  },
+  beforeRouteUpdate (to, from, next) {
+    next()
+    this.unsubscribeFromRealTimeUpdate()
+    this.loadBoard()
+  },
+  beforeRouteLeave (to, from, next) {
+    next()
+    this.unsubscribeFromRealTimeUpdate()
+  },
+  mounted () {
+    this.$el.addEventListener('click', this.dismissActiveForms)
+  },
+  beforeDestroy () {
+    this.$el.removeEventListener('click', this.dismissActiveForms)
+  },
+  methods: {
+    loadBoard () {
+      console.log('[BoardPage] Loading board')
+      boardService.getBoard(this.$route.params.boardId).then(data => {
+        this.team.name = data.team ? data.team.name : ''
+        this.board.id = data.board.id
+        this.board.personal = data.board.personal
+        this.board.name = data.board.name
+
+        this.members.splice(0)
+
+        data.members.forEach(member => {
+          this.members.push({
+            id: member.userId,
+            shortName: member.shortName
+          })
+        })
+
+        this.cardLists.splice(0)
+
+        data.cardLists.sort((list1, list2) => {
+          return list1.position - list2.position
+        })
+
+        data.cardLists.forEach(cardList => {
+          cardList.cards.sort((card1, card2) => {
+            return card1.position - card2.position
+          })
+
+          this.cardLists.push({
+            id: cardList.id,
+            name: cardList.name,
+            cards: cardList.cards,
+            cardForm: {
+              open: false,
+              title: ''
+            }
+          })
+        })
+        this.subscribeToRealTimUpdate()
+      }).catch(error => {
+        notify.error(error.message)
+      })
+    },
+    dismissActiveForms (event) {
+      console.log('[BoardPage] Dismissing forms')
+      let dismissAddCardForm = true
+      let dismissAddListForm = true
+      if (event.target.closest('.add-card-form') || event.target.closest('.add-card-button')) {
+        dismissAddCardForm = false
+      }
+      if (event.target.closest('.add-list-form') || event.target.closest('.add-list-button')) {
+        dismissAddListForm = false
+      }
+      if (dismissAddCardForm) {
+        this.cardLists.forEach((cardList) => { cardList.cardForm.open = false })
+      }
+      if (dismissAddListForm) {
+        this.addListForm.open = false
+      }
+    },
+    openAddMember () {
+      $('#addMemberModal').modal('show')
+    },
+    onMemberAdded (member) {
+      this.members.push(member)
+    },
+    addCardList () {
+      if (!this.addListForm.name) {
+        return
+      }
+      const cardList = {
+        boardId: this.board.id,
+        name: this.addListForm.name,
+        position: this.cardLists.length + 1
+      }
+      cardListService.add(cardList).then(savedCardList => {
+        this.cardLists.push({
+          id: savedCardList.id,
+          name: savedCardList.name,
+          cards: [],
+          cardForm: {
+            open: false,
+            title: ''
+          }
+        })
+        this.closeAddListForm()
+      }).catch(error => {
+        notify.error(error.message)
+      })
+    },
+    addCard (cardList) {
+      if (!cardList.cardForm.title.trim()) {
+        return
+      }
+
+      const card = {
+        boardId: this.board.id,
+        cardListId: cardList.id,
+        title: cardList.cardForm.title,
+        position: cardList.cards.length + 1
+      }
+
+      cardService.add(card).then(savedCard => {
+        this.appendCardToList(cardList, savedCard)
+        cardList.cardForm.title = ''
+        this.focusCardForm(cardList)
+      }).catch(error => {
+        notify.error(error.message)
+      })
+    },
+    openAddListForm () {
+      this.addListForm.open = true
+      this.$nextTick(() => {
+        $('#cardListName').trigger('focus')
+      })
+    },
+    closeAddListForm () {
+      this.addListForm.open = false
+      this.addListForm.name = ''
+    },
+    openAddCardForm (cardList) {
+      // Close other add card form
+      this.cardLists.forEach((cardList) => { cardList.cardForm.open = false })
+      cardList.cardForm.open = true
+      this.focusCardForm(cardList)
+    },
+    focusCardForm (cardList) {
+      this.$nextTick(() => { $('#cardTitle' + cardList.id).trigger('focus') })
+    },
+    closeAddCardForm (cardList) {
+      cardList.cardForm.open = false
+    },
+    onCardListDragEnded (event) {
+      console.log('[BoardPage] Card list drag ended', event)
+
+      // Get the latest card list order and send it to the back-end
+      const positionChanges = {
+        boardId: this.board.id,
+        cardListPositions: []
+      }
+
+      this.cardLists.forEach((cardList, index) => {
+        positionChanges.cardListPositions.push({
+          cardListId: cardList.id,
+          position: index + 1
+        })
+      })
+
+      cardListService.changePositions(positionChanges).catch(error => {
+        notify.error(error.message)
+      })
+    },
+    onCardDragEnded (event) {
+      console.log('[BoardPage] Card drag ended', event)
+      // Get the card list that have card orders changed
+      const fromListId = event.from.dataset.listId
+      const toListId = event.to.dataset.listId
+      const changedListIds = [fromListId]
+      if (fromListId !== toListId) {
+        changedListIds.push(toListId)
+      }
+
+      const positionChanges = {
+        boardId: this.board.id,
+        cardPositions: []
+      }
+
+      changedListIds.forEach(cardListId => {
+        const cardList = this.cardLists.filter(cardList => { return cardList.id === parseInt(cardListId) })[0]
+
+        cardList.cards.forEach((card, index) => {
+          positionChanges.cardPositions.push({
+            cardListId: cardListId,
+            cardId: card.id,
+            position: index + 1
+          })
+        })
+      })
+
+      cardService.changePositions(positionChanges).catch(error => {
+        notify.error(error.message)
+      })
+    },
+    subscribeToRealTimUpdate () {
+      this.$rt.subscribe('/board/' + this.board.id, this.onRealTimeUpdated)
+    },
+    unsubscribeFromRealTimeUpdate () {
+      this.$rt.unsubscribe('/board/' + this.board.id, this.onRealTimeUpdated)
+    },
+    onRealTimeUpdated (update) {
+      console.log('[BoardPage] Real time update received', update)
+      if (update.type === 'cardAdded') {
+        this.onCardAdded(update.card)
+      }
+    },
+    onCardAdded (card) {
+      const cardList = this.cardLists.filter(cardList => { return cardList.id === card.cardListId })[0]
+      if (!cardList) {
+        console.warn('No card list found by id ' + card.cardListId)
+        return
+      }
+      this.appendCardToList(cardList, card)
+    },
+    appendCardToList (cardList, card) {
+      const existingIndex = cardList.cards.findIndex(existingCard => { return existingCard.id === card.id })
+      if (existingIndex === -1) {
+        cardList.cards.push({
+          id: card.id,
+          title: card.title
+        })
+      }
+    }
   }
 }
 </script>

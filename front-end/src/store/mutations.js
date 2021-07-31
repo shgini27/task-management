@@ -4,6 +4,12 @@ export default {
     state.teams = data.teams
     state.boards = data.boards
   },
+  logout (state) {
+    state.user.name = ''
+    state.user.authenticated = false
+    state.teams = []
+    state.boards = []
+  },
   addTeam (state, team) {
     state.teams.push(team)
   },
