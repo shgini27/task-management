@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import $ from 'jquery'
+import { Modal } from 'bootstrap'
 import { required } from 'vuelidate/lib/validators'
 import teamService from '@/services/teams'
 
@@ -43,7 +43,8 @@ export default {
       team: {
         name: ''
       },
-      errorMessage: ''
+      errorMessage: '',
+      modalEl: null
     }
   },
   validations: {
@@ -54,8 +55,10 @@ export default {
     }
   },
   mounted () {
-    $('#createTeamModal').on('show.bs.modal', () => {
-      $('#teamNameInput').trigger('focus')
+    this.modalEl = document.getElementById('createTeamModal')
+    const teamInput = document.getElementById('teamNameInput')
+    this.modalEl.addEventListener('show.bs.modal', function (event) {
+      teamInput.focus()
     })
   },
   methods: {
@@ -76,7 +79,8 @@ export default {
       this.$v.$reset()
       this.team.name = ''
       this.errorMessage = ''
-      $('#createTeamModal').modal('hide')
+      const modal = Modal.getInstance(this.modalEl)
+      modal.hide()
     }
   }
 }

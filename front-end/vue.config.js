@@ -4,6 +4,9 @@ module.exports = {
     proxy: {
       '/api/*': {
         target: 'http://localhost:8000'
+      },
+      '/rt/*': {
+        target: 'http://localhost:8080'
       }
     }
   },

@@ -44,7 +44,7 @@
 
 <script>
 // @ is an alias to /src
-import $ from 'jquery'
+import { Modal } from 'bootstrap'
 import PageHeader from '@/components/PageHeader'
 import CreateBoardModal from '@/modals/CreateBoardModal'
 import CreateTeamModal from '@/modals/CreateTeamModal'
@@ -54,8 +54,17 @@ export default {
   name: 'HomePage',
   data () {
     return {
-      selectedTeamId: 0
+      selectedTeamId: 0,
+      createBoardModal: null,
+      createTeamModal: null
     }
+  },
+  mounted () {
+    this.createBoardModal = new Modal(document.getElementById('createBoardModal'), {
+      keyboard: false,
+      focus: true
+    })
+    this.createTeamModal = new Modal(document.getElementById('createTeamModal'))
   },
   computed: {
     ...mapGetters([
@@ -74,10 +83,10 @@ export default {
     },
     createBoard (team) {
       this.selectedTeamId = team ? team.id : 0
-      $('#createBoardModal').modal('show')
+      this.createBoardModal.show()
     },
     createTeam () {
-      $('#createTeamModal').modal('show')
+      this.createTeamModal.show()
     },
     onBoardCreated (boardId) {
       this.$router.push({ name: 'board', params: { boardId: boardId } })

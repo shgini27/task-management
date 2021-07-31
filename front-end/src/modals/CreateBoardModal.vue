@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import $ from 'jquery'
+import { Modal } from 'bootstrap'
 import { required } from 'vuelidate/lib/validators'
 import boardService from '@/services/boards'
 
@@ -48,7 +48,8 @@ export default {
         name: '',
         description: ''
       },
-      errorMessage: ''
+      errorMessage: '',
+      modalEl: null
     }
   },
   validations: {
@@ -62,8 +63,10 @@ export default {
     }
   },
   mounted () {
-    $('#createBoardModal').on('show.bs.modal', () => {
-      $('#boardNameInput').trigger('focus')
+    this.modalEl = document.getElementById('createBoardModal')
+    const boardInput = document.getElementById('boardNameInput')
+    this.modalEl.addEventListener('show.bs.modal', function (event) {
+      boardInput.focus()
     })
   },
   methods: {
@@ -92,7 +95,8 @@ export default {
       this.board.name = ''
       this.board.description = ''
       this.errorMessage = ''
-      $('#createBoardModal').modal('hide')
+      const modal = Modal.getInstance(this.modalEl)
+      modal.hide()
     }
   }
 }

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import $ from 'jquery'
+import { Modal } from 'bootstrap'
 import { required } from 'vuelidate/lib/validators'
 import boardService from '@/services/boards'
 
@@ -39,7 +39,8 @@ export default {
   data () {
     return {
       usernameOrEmailAddress: '',
-      errorMessage: ''
+      errorMessage: '',
+      modalEl: null
     }
   },
   validations: {
@@ -48,8 +49,10 @@ export default {
     }
   },
   mounted () {
-    $('#addMemberModal').on('shown.bs.modal', () => {
-      $('#usernameOrEmailAddressInput').trigger('focus')
+    this.modalEl = document.getElementById('addMemberModal')
+    const usernameInput = document.getElementById('usernameOrEmailAddressInput')
+    this.modalEl.addEventListener('shown.bs.modal', () => {
+      usernameInput.focus()
     })
   },
   methods: {
@@ -70,7 +73,8 @@ export default {
       this.$v.$reset()
       this.usernameOrEmailAddress = ''
       this.errorMessage = ''
-      $('#addMemberModal').modal('hide')
+      const modal = Modal.getInstance(this.modalEl)
+      modal.hide()
     }
   }
 }

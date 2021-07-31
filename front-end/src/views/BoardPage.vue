@@ -81,7 +81,7 @@
 
 <script>
 import draggable from 'vuedraggable'
-import $ from 'jquery'
+import { Modal } from 'bootstrap'
 import PageHeader from '@/components/PageHeader.vue'
 import AddMemberModal from '@/modals/AddMemberModal.vue'
 import notify from '@/utils/notify'
@@ -100,7 +100,8 @@ export default {
       addListForm: {
         open: false,
         name: ''
-      }
+      },
+      addMemberModal: null
     }
   },
   components: {
@@ -123,6 +124,7 @@ export default {
     this.unsubscribeFromRealTimeUpdate()
   },
   mounted () {
+    this.addMemberModal = new Modal(document.getElementById('addMemberModal'))
     this.$el.addEventListener('click', this.dismissActiveForms)
   },
   beforeDestroy () {
@@ -190,7 +192,7 @@ export default {
       }
     },
     openAddMember () {
-      $('#addMemberModal').modal('show')
+      this.addMemberModal.show()
     },
     onMemberAdded (member) {
       this.members.push(member)
@@ -242,7 +244,7 @@ export default {
     openAddListForm () {
       this.addListForm.open = true
       this.$nextTick(() => {
-        $('#cardListName').trigger('focus')
+        document.getElementById('cardListName').focus()
       })
     },
     closeAddListForm () {
@@ -256,7 +258,9 @@ export default {
       this.focusCardForm(cardList)
     },
     focusCardForm (cardList) {
-      this.$nextTick(() => { $('#cardTitle' + cardList.id).trigger('focus') })
+      this.$nextTick(() => {
+        document.getElementById('cardTitle' + cardList.id).focus()
+      })
     },
     closeAddCardForm (cardList) {
       cardList.cardForm.open = false
