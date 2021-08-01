@@ -15,26 +15,26 @@ public class RegistrationManagement {
     @Autowired
     public RegistrationManagement(
             UserRepository repository,
-            PasswordEncryptor passwordEncryptor){
+            PasswordEncryptor passwordEncryptor) {
         this.repository = repository;
         this.passwordEncryptor = passwordEncryptor;
     }
 
-    public User register(String username, String email, String password) throws RegistrationException{
+    public User register(String username, String emailAddress, String firstName, String lastName, String password)
+            throws RegistrationException {
         User existingUser = repository.findByUsername(username);
-        if(existingUser != null){
+        if (existingUser != null) {
             throw new UsernameExistsException();
         }
 
-        existingUser = repository.findByEmailAddress(email.toUpperCase());
-        if(existingUser != null){
+        existingUser = repository.findByEmailAddress(emailAddress.toLowerCase());
+        if (existingUser != null) {
             throw new EmailAddressExistsException();
         }
 
         String encryptedPassword = passwordEncryptor.encrypt(password);
-        User newUser = User.create(username, email, encryptedPassword);
+        User newUser = User.create(username, emailAddress.toLowerCase(), firstName, lastName, encryptedPassword);
         repository.save(newUser);
-
         return newUser;
     }
 }

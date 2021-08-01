@@ -5,7 +5,7 @@ import org.ttweb.taskmanagement.domain.model.card.CardPosition;
 
 import java.util.List;
 
-public class ChangeCardPositionsCommand {
+public class ChangeCardPositionsCommand extends UserCommand{
     private BoardId boardId;
     private List<CardPosition> cardPositions;
 

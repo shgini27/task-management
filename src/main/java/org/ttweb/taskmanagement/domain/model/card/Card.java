@@ -1,6 +1,9 @@
 package org.ttweb.taskmanagement.domain.model.card;
 
+import org.springframework.util.StringUtils;
 import org.ttweb.taskmanagement.domain.common.model.AbstractBaseEntity;
+import org.ttweb.taskmanagement.domain.model.board.BoardId;
+import org.ttweb.taskmanagement.domain.model.cardlist.CardList;
 import org.ttweb.taskmanagement.domain.model.cardlist.CardListId;
 import org.ttweb.taskmanagement.domain.model.user.UserId;
 
@@ -17,6 +20,9 @@ public class Card extends AbstractBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "board_id")
+    private long boardId;
+
     @Column(name = "card_list_id")
     private long cardListId;
 
@@ -29,6 +35,9 @@ public class Card extends AbstractBaseEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "cover_image")
+    private String coverImage;
+
     @Column(name = "position")
     private int position;
 
@@ -39,9 +48,10 @@ public class Card extends AbstractBaseEntity {
     @Column(name = "created_date", nullable = false)
     private Date createdDate;
 
-    public static Card create(CardListId cardListId, UserId userId, String title, int position) {
+    public static Card create(CardList cardList, UserId userId, String title, int position) {
         Card card = new Card();
-        card.cardListId = cardListId.value();
+        card.boardId = cardList.getBoardId().value();
+        card.cardListId = cardList.getId().value();
         card.userId = userId.value();
         card.title = title;
         card.description = "";
@@ -51,8 +61,28 @@ public class Card extends AbstractBaseEntity {
         return card;
     }
 
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+
+    public void changeDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean hasCoverImage() {
+        return StringUtils.hasText(coverImage);
+    }
+
+    public void addCoverImage(String coverImage) {
+        this.coverImage = coverImage;
+    }
+
     public CardId getId() {
         return new CardId(id);
+    }
+
+    public BoardId getBoardId() {
+        return new BoardId(boardId);
     }
 
     public CardListId getCardListId() {
@@ -69,6 +99,10 @@ public class Card extends AbstractBaseEntity {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getCoverImage() {
+        return coverImage;
     }
 
     public int getPosition() {
@@ -104,10 +138,12 @@ public class Card extends AbstractBaseEntity {
     public String toString() {
         return "Card{" +
                 "id=" + id +
+                ", boardId=" + boardId +
                 ", cardListId=" + cardListId +
                 ", userId=" + userId +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
+                ", coverImage='" + coverImage + '\'' +
                 ", position=" + position +
                 ", archived=" + archived +
                 ", createdDate=" + createdDate +

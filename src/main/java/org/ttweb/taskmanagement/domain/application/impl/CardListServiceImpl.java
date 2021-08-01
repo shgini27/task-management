@@ -1,6 +1,5 @@
 package org.ttweb.taskmanagement.domain.application.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ttweb.taskmanagement.domain.application.CardListService;
 import org.ttweb.taskmanagement.domain.application.commands.AddCardListCommand;
@@ -20,10 +19,8 @@ public class CardListServiceImpl implements CardListService {
     private CardListRepository cardListRepository;
     private DomainEventPublisher domainEventPublisher;
 
-    @Autowired
-    public CardListServiceImpl(
-            CardListRepository cardListRepository,
-            DomainEventPublisher domainEventPublisher){
+    public CardListServiceImpl(CardListRepository cardListRepository,
+                               DomainEventPublisher domainEventPublisher) {
         this.cardListRepository = cardListRepository;
         this.domainEventPublisher = domainEventPublisher;
     }
@@ -35,14 +32,11 @@ public class CardListServiceImpl implements CardListService {
 
     @Override
     public CardList addCardList(AddCardListCommand command) {
-        CardList cardList = CardList.create(
-                command.getBoardId(),
-                command.getUserId(),
-                command.getName(),
-                command.getPosition()
-        );
+        CardList cardList = CardList.create(command.getBoardId(),
+                command.getUserId(), command.getName(), command.getPosition());
+
         cardListRepository.save(cardList);
-        domainEventPublisher.publish(new CardListAddedEvent(this, cardList));
+        domainEventPublisher.publish(new CardListAddedEvent(cardList, command));
         return cardList;
     }
 

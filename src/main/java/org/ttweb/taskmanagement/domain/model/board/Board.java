@@ -39,11 +39,7 @@ public class Board extends AbstractBaseEntity {
     /**
      * Create new board
      */
-    public static Board create(
-            UserId userId,
-            String name,
-            String description,
-            TeamId teamId) {
+    public static Board create(UserId userId, String name, String description, TeamId teamId) {
         Board board = new Board();
         board.userId = userId.value();
         board.name = name;
@@ -72,6 +68,10 @@ public class Board extends AbstractBaseEntity {
 
     public TeamId getTeamId() {
         return teamId == null ? new TeamId(0) : new TeamId(teamId);
+    }
+
+    public boolean isPersonal() {
+        return teamId == null;
     }
 
     public boolean isArchived() {

@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class DefaultDomainEventPublisher implements DomainEventPublisher {
     private ApplicationEventPublisher actualPublisher;
 
-    @Autowired
+    //@Autowired
     public DefaultDomainEventPublisher(ApplicationEventPublisher actualPublisher){
         this.actualPublisher = actualPublisher;
     }

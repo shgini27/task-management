@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.ttweb.taskmanagement.domain.model.board.BoardId;
 import org.ttweb.taskmanagement.domain.model.card.Card;
+import org.ttweb.taskmanagement.domain.model.card.CardId;
 import org.ttweb.taskmanagement.domain.model.card.CardPosition;
 import org.ttweb.taskmanagement.domain.model.card.CardRepository;
 
@@ -21,6 +22,11 @@ public class HibernateCardRepository extends HibernateSupport<Card> implements C
     HibernateCardRepository(EntityManager entityManager, JdbcTemplate jdbcTemplate) {
         super(entityManager);
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Card findById(CardId cardId) {
+        return getSession().find(Card.class, cardId.value());
     }
 
     @Override

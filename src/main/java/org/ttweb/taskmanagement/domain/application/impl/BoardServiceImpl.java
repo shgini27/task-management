@@ -3,6 +3,7 @@ package org.ttweb.taskmanagement.domain.application.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ttweb.taskmanagement.domain.application.BoardService;
+import org.ttweb.taskmanagement.domain.application.commands.AddBoardMemberCommand;
 import org.ttweb.taskmanagement.domain.application.commands.CreateBoardCommand;
 import org.ttweb.taskmanagement.domain.common.event.DomainEventPublisher;
 import org.ttweb.taskmanagement.domain.model.board.*;
@@ -62,15 +63,15 @@ public class BoardServiceImpl implements BoardService {
                 command.getDescription(),
                 command.getTeamId()
         );
-        domainEventPublisher.publish(new BoardCreatedEvent(this, board));
+        domainEventPublisher.publish(new BoardCreatedEvent( board, command));
         return board;
     }
 
     @Override
-    public User addMember(BoardId boardId, String usernameOrEmailAddress) throws UserNotFoundException {
-        User user = userFinder.find(usernameOrEmailAddress);
-        boardMemberRepository.add(boardId, user.getId());
-        domainEventPublisher.publish(new BoardMemberAddedEvent(this, boardId, user));
+    public User addMember(AddBoardMemberCommand command) throws UserNotFoundException {
+        User user = userFinder.find(command.getUsernameOrEmailAddress());
+        boardMemberRepository.add(command.getBoardId(), user.getId());
+        domainEventPublisher.publish(new BoardMemberAddedEvent(command.getBoardId(), user, command));
         return user;
     }
 }

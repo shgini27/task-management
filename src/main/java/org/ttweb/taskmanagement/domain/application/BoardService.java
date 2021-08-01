@@ -1,5 +1,6 @@
 package org.ttweb.taskmanagement.domain.application;
 
+import org.ttweb.taskmanagement.domain.application.commands.AddBoardMemberCommand;
 import org.ttweb.taskmanagement.domain.application.commands.CreateBoardCommand;
 import org.ttweb.taskmanagement.domain.model.board.Board;
 import org.ttweb.taskmanagement.domain.model.board.BoardId;
@@ -46,10 +47,9 @@ public interface BoardService {
     /**
      * Add board member
      *
-     * @param boardId id of the board
-     * @param usernameOrEmailAddress username or email address
+     * @param command the command instance
      * @return newly added member user
      * @throws UserNotFoundException user by the usernameOrEmailAddress not found
      */
-    User addMember(BoardId boardId, String usernameOrEmailAddress) throws UserNotFoundException;
+    User addMember(AddBoardMemberCommand command) throws UserNotFoundException;
 }

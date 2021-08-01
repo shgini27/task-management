@@ -1,12 +1,11 @@
 package org.ttweb.taskmanagement.domain.application.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.util.StringUtils;
 import org.ttweb.taskmanagement.domain.application.UserService;
 import org.ttweb.taskmanagement.domain.application.commands.RegistrationCommand;
 import org.ttweb.taskmanagement.domain.common.event.DomainEventPublisher;
@@ -23,12 +22,10 @@ public class UserServiceImpl implements UserService {
     private MailManager mailManager;
     private UserRepository userRepository;
 
-    @Autowired
-    public UserServiceImpl(
-            RegistrationManagement registrationManagement,
-            DomainEventPublisher domainEventPublisher,
-            MailManager mailManager,
-            UserRepository userRepository) {
+    public UserServiceImpl(RegistrationManagement registrationManagement,
+                           DomainEventPublisher domainEventPublisher,
+                           MailManager mailManager,
+                           UserRepository userRepository) {
         this.registrationManagement = registrationManagement;
         this.domainEventPublisher = domainEventPublisher;
         this.mailManager = mailManager;
@@ -46,7 +43,6 @@ public class UserServiceImpl implements UserService {
         } else {
             user = userRepository.findByUsername(username);
         }
-
         if (user == null) {
             throw new UsernameNotFoundException("No user found by `" + username + "`");
         }
@@ -61,15 +57,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(RegistrationCommand command) throws RegistrationException {
         Assert.notNull(command, "Parameter `command` must not be null");
-
         User newUser = registrationManagement.register(
                 command.getUsername(),
                 command.getEmailAddress(),
-                command.getPassword()
-        );
+                command.getFirstName(),
+                command.getLastName(),
+                command.getPassword());
 
         sendWelcomeMessage(newUser);
-        domainEventPublisher.publish(new UserRegisteredEvent(newUser));
+        domainEventPublisher.publish(new UserRegisteredEvent(newUser, command));
     }
 
     private void sendWelcomeMessage(User user) {
