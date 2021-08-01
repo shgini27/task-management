@@ -8,12 +8,12 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'HomePage',
+    name: 'home',
     component: HomePage
   },
   {
     path: '/login',
-    name: 'LoginPage',
+    name: 'login',
     // route level code-splitting
     // this generates a separate chunk (login.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -21,7 +21,7 @@ const routes = [
   },
   {
     path: '/register',
-    name: 'RegisterPage',
+    name: 'register',
     // route level code-splitting
     // this generates a separate chunk (register.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -29,7 +29,12 @@ const routes = [
   },
   {
     path: '/board/:boardId',
-    name: 'BoardPage',
+    name: 'board',
+    component: BoardPage
+  },
+  {
+    path: '/card/:cardId/:cardTitle',
+    name: 'card',
     component: BoardPage
   }
 ]

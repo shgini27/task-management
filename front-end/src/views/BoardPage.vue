@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" v-show="board.id">
     <PageHeader />
     <div class="page-body">
       <div class="board-wrapper">
@@ -22,7 +22,7 @@
             </div>
           </div>
           <div class="board-body">
-            <draggable v-model="cardList" class="list-container" @ended="onCardListDragEnded"
+            <draggable v-model="cardLists" class="list-container" @ended="onCardListDragEnded"
                        :options="{handle: '.list-header', animation: 0, scrollSensitivity: 100, touchStartThreshold: 20}">
               <div class="list-wrapper" v-for="cardList in cardLists" :key="cardList.id">
                 <div class="list">
@@ -30,9 +30,9 @@
                   <draggable class="cards" v-model="cardList.cards" @ended="onCardDragEnded"
                              :options="{draggable: '.card-item', group: 'cards', ghostClass: 'ghost-card',
                              animation: 0, scrollSensitivity: 100, touchStartThreshold: 20}"
-                             :data-list-id="cardList.id"
-                  >
-                    <div class="card-item" v-for="card in cardList.cards" :key="card.id">
+                             :data-list-id="cardList.id">
+                    <div class="card-item" v-for="card in cardList.cards" v-bind:key="card.id" @click="openCard(card)">
+                      <div class="cover-image" v-if="card.coverImage"><img :src="card.coverImage" /></div>
                       <div class="card-title">{{ card.title }}</div>
                     </div>
                     <div class="add-card-form-wrapper" v-if="cardList.cardForm.open">
@@ -50,8 +50,8 @@
                       </form>
                     </div>
                   </draggable>
-                  <div class="add-card-button" v-show="!cardList.cardForm.open" @click="openAddCardForm()">+ Add a
-                    card
+                  <div class="add-card-button" v-show="!cardList.cardForm.open" @click="openAddCardForm()">
+                    + Add a card
                   </div>
                 </div>
               </div>
@@ -76,6 +76,12 @@
       :boardId="board.id"
       @added="onMemberAdded"
     />
+    <CardModal
+      :card="openedCard"
+      :cardList="focusedCardList"
+      :board="board"
+      :members="members"
+      @coverImageChanged="updateCardCoverImage"/>
   </div>
 </template>
 
@@ -88,6 +94,7 @@ import notify from '@/utils/notify'
 import boardService from '@/services/boards'
 import cardListService from '@/services/card-lists'
 import cardService from '@/services/cards'
+import CardModal from '@/modals/CardModal'
 
 export default {
   name: 'BoardPage',
@@ -101,77 +108,129 @@ export default {
         open: false,
         name: ''
       },
-      addMemberModal: null
+      addMemberModal: null,
+      cardModalEl: null,
+      openedCard: {}
     }
   },
   components: {
+    CardModal,
     PageHeader,
     AddMemberModal,
     draggable
   },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      vm.loadBoard()
-    })
-  },
-  beforeRouteUpdate (to, from, next) {
-    next()
-    this.unsubscribeFromRealTimeUpdate()
-    this.loadBoard()
+  watch: {
+    '$route' (to, from) {
+      // Switch from one board to another
+      if (to.name === from.name && to.name === 'board') {
+        this.unsubscribeFromRealTimeUpdate(from.params.boardId)
+        this.loadBoard(to.params.boardId)
+      }
+      // Open a card
+      if (to.name === 'card' && from.name === 'board') {
+        this.loadCard(to.params.cardId).then(() => {
+          this.openCardWindow()
+        })
+      }
+      // Close a card
+      if (to.name === 'board' && from.name === 'card') {
+        this.closeCardWindow()
+        this.openedCard = {}
+      }
+    }
   },
   beforeRouteLeave (to, from, next) {
+    console.log('[BoardPage] Before route leave')
     next()
-    this.unsubscribeFromRealTimeUpdate()
+    if (to.name !== 'card') {
+      this.unsubscribeFromRealTimeUpdate(this.board.id)
+    }
   },
   mounted () {
+    console.log('[BoardPage] Mounted')
+    this.loadInitial()
     this.addMemberModal = new Modal(document.getElementById('addMemberModal'))
     this.$el.addEventListener('click', this.dismissActiveForms)
+    // Closing card window will change back to board URL
+    this.cardModalEl = document.getElementById('cardModal')
+    this.cardModalEl.addEventListener('hide.bs.modal', () => {
+      this.$router.push({ name: 'board', params: { boardId: this.board.id } })
+    })
   },
   beforeDestroy () {
     this.$el.removeEventListener('click', this.dismissActiveForms)
   },
   methods: {
-    loadBoard () {
-      console.log('[BoardPage] Loading board')
-      boardService.getBoard(this.$route.params.boardId).then(data => {
-        this.team.name = data.team ? data.team.name : ''
-        this.board.id = data.board.id
-        this.board.personal = data.board.personal
-        this.board.name = data.board.name
-
-        this.members.splice(0)
-
-        data.members.forEach(member => {
-          this.members.push({
-            id: member.userId,
-            shortName: member.shortName
-          })
+    loadInitial () {
+      // The board page can be opened through a card URL.
+      if (this.$route.params.cardId) {
+        console.log('[BoardPage] Opened with card URL')
+        this.loadCard(this.$route.params.cardId).then(card => {
+          return this.loadBoard(card.boardId)
+        }).then(() => {
+          this.openCardWindow()
         })
-
-        this.cardLists.splice(0)
-
-        data.cardLists.sort((list1, list2) => {
-          return list1.position - list2.position
+      } else {
+        console.log('[BoardPage] Opened with board URL')
+        this.loadBoard(this.$route.params.boardId)
+      }
+    },
+    loadCard (cardId) {
+      return new Promise(resolve => {
+        console.log('[BoardPage] Loading card ' + cardId)
+        cardService.getCard(cardId).then(card => {
+          this.openedCard = card
+          resolve(card)
+        }).catch(error => {
+          notify.error(error.message)
         })
+      })
+    },
+    loadBoard (boardId) {
+      return new Promise(resolve => {
+        console.log('[BoardPage] Loading board ' + boardId)
+        boardService.getBoard(boardId).then(data => {
+          this.team.name = data.team ? data.team.name : ''
+          this.board.id = data.board.id
+          this.board.personal = data.board.personal
+          this.board.name = data.board.name
 
-        data.cardLists.forEach(cardList => {
-          cardList.cards.sort((card1, card2) => {
-            return card1.position - card2.position
+          this.members.splice(0)
+
+          data.members.forEach(member => {
+            this.members.push({
+              id: member.userId,
+              name: member.name,
+              shortName: member.shortName
+            })
           })
 
-          this.cardLists.push({
-            id: cardList.id,
-            name: cardList.name,
-            cards: cardList.cards,
-            cardForm: {
-              open: false,
-              title: ''
-            }
+          this.cardLists.splice(0)
+
+          data.cardLists.sort((list1, list2) => {
+            return list1.position - list2.position
           })
+
+          data.cardLists.forEach(cardList => {
+            cardList.cards.sort((card1, card2) => {
+              return card1.position - card2.position
+            })
+
+            this.cardLists.push({
+              id: cardList.id,
+              name: cardList.name,
+              cards: cardList.cards,
+              cardForm: {
+                open: false,
+                title: ''
+              }
+            })
+          })
+          this.subscribeToRealTimUpdate(data.board.id)
+          resolve()
+        }).catch(error => {
+          notify.error(error.message)
         })
-        this.subscribeToRealTimUpdate()
-      }).catch(error => {
-        notify.error(error.message)
       })
     },
     dismissActiveForms (event) {
@@ -344,6 +403,29 @@ export default {
           title: card.title
         })
       }
+    },
+    openCard (card) {
+      const titlePart = card.title.toLowerCase().trim().replace(/\s/g, '-')
+      this.$router.push({ name: 'card', params: { cardId: card.id, cardTitle: titlePart } })
+    },
+    openCardWindow () {
+      console.log('[BoardPage] Open card window ' + this.openedCard.id)
+      const cardModal = new Modal(this.cardModalEl)
+      cardModal.show()
+    },
+    closeCardWindow () {
+      console.log('[BoardPage] Close card window ' + this.openedCard.id)
+      const cardModal = Modal.getInstance(this.cardModalEl)
+      cardModal.hide()
+    },
+    updateCardCoverImage (change) {
+      const cardList = this.cardLists.find(cardList => {
+        return cardList.id === change.cardListId
+      })
+      const card = cardList.cards.find(card => {
+        return card.id === change.cardId
+      })
+      card.coverImage = change.coverImage
     }
   }
 }
