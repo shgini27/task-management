@@ -40,7 +40,7 @@ public class HibernateUserRepositoryTest {
     @Test
     public void save_nullUsernameUser_shouldFail() {
         User invalidUser = User.create(
-                null, "sunny@taskagile.com", "MyPassword!");
+                null, "sunny@taskagile.com", "Test", "Test", "MyPassword!");
 
         Exception exception = assertThrows(PersistenceException.class, () -> {
             repository.save(invalidUser);

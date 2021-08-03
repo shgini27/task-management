@@ -3,6 +3,7 @@ package org.ttweb.taskmanagement.domain.application.impl;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.ttweb.taskmanagement.domain.application.commands.RegistrationCommand;
@@ -11,6 +12,7 @@ import org.ttweb.taskmanagement.domain.common.mail.MailManager;
 import org.ttweb.taskmanagement.domain.common.mail.MessageVariable;
 import org.ttweb.taskmanagement.domain.model.user.*;
 import org.ttweb.taskmanagement.domain.model.user.events.UserRegisteredEvent;
+import org.ttweb.taskmanagement.utils.IpAddress;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -72,7 +74,7 @@ public class UserServiceImplTest {
     @Test
     public void loadUserByUsername_existUsername_shouldSucceed() throws IllegalAccessException {
         String existUsername = "ExistUsername";
-        User foundUser = User.create(existUsername, "user@taskagile.com", "EncryptedPassword!");
+        User foundUser = User.create(existUsername, "user@taskagile.com", "Test", "Test", "EncryptedPassword!");
         foundUser.updateName("Test", "User");
         // Found user from the database should have id. And since no setter of
         // id is available in User, we have to write the value to it using reflection
@@ -117,10 +119,13 @@ public class UserServiceImplTest {
         String username = "existing";
         String emailAddress = "sunny@taskagile.com";
         String password = "MyPassword!";
-        doThrow(UsernameExistsException.class).when(registrationManagementMock)
-                .register(username, emailAddress, password);
+        String firstName = "Sunny";
+        String lastName = "Hu";
 
-        RegistrationCommand command = new RegistrationCommand(username, emailAddress, password);
+        doThrow(UsernameExistsException.class).when(registrationManagementMock)
+                .register(username, emailAddress, firstName, lastName, password);
+
+        RegistrationCommand command = new RegistrationCommand(username, emailAddress, firstName, lastName, password);
 
         Exception exception = assertThrows(RegistrationException.class, () -> {
             instance.register(command);
@@ -134,10 +139,12 @@ public class UserServiceImplTest {
         String username = "sunny";
         String emailAddress = "existing@taskagile.com";
         String password = "MyPassword!";
+        String firstName = "Sunny";
+        String lastName = "Hu";
         doThrow(EmailAddressExistsException.class).when(registrationManagementMock)
-                .register(username, emailAddress, password);
+                .register(username, emailAddress, firstName, lastName, password);
 
-        RegistrationCommand command = new RegistrationCommand(username, emailAddress, password);
+        RegistrationCommand command = new RegistrationCommand(username, emailAddress, firstName, lastName,  password);
 
         Exception exception = assertThrows(RegistrationException.class, () -> {
             instance.register(command);
@@ -152,20 +159,42 @@ public class UserServiceImplTest {
         String username = "sunny";
         String emailAddress = "sunny@taskagile.com";
         String password = "MyPassword!";
+        String firstName = "Sunny";
+        String lastName = "Hu";
+        User newUser = mock(User.class);
+        when(newUser.getId()).thenReturn(new UserId(1));
+        when(newUser.getUsername()).thenReturn(username);
+        when(newUser.getEmailAddress()).thenReturn(emailAddress);
+        when(newUser.getPassword()).thenReturn(password);
+        when(newUser.getFirstName()).thenReturn(firstName);
+        when(newUser.getFirstName()).thenReturn(lastName);
 
-        User newUser = User.create(username, emailAddress, password);
-        when(registrationManagementMock.register(username, emailAddress, password))
+        when(registrationManagementMock.register(username, emailAddress, firstName, lastName, password))
                 .thenReturn(newUser);
-        RegistrationCommand command = new RegistrationCommand(username, emailAddress, password);
+
+        IpAddress ipAddress = new IpAddress("127.0.0.1");
+        RegistrationCommand command = mock(RegistrationCommand.class);
+        when(command.getUsername()).thenReturn(username);
+        when(command.getEmailAddress()).thenReturn(emailAddress);
+        when(command.getFirstName()).thenReturn(firstName);
+        when(command.getLastName()).thenReturn(lastName);
+        when(command.getPassword()).thenReturn(password);
+        when(command.getIpAddress()).thenReturn(ipAddress);
 
         instance.register(command);
 
         verify(mailManagerMock).send(
                 emailAddress,
-                "Welcome to Task Management Application",
+                "Welcome to TaskAgile",
                 "welcome.ftl",
                 MessageVariable.from("user", newUser)
         );
-        verify(eventPublisherMock).publish(new UserRegisteredEvent(newUser));
+
+        ArgumentCaptor<UserRegisteredEvent> argumentCaptor = ArgumentCaptor.forClass(UserRegisteredEvent.class);
+        verify(eventPublisherMock).publish(argumentCaptor.capture());
+
+        UserRegisteredEvent event = argumentCaptor.getValue();
+        assertEquals(newUser.getId(), event.getUserId());
+        assertEquals(ipAddress, event.getIpAddress());
     }
 }
