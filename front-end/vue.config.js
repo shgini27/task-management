@@ -6,10 +6,10 @@ module.exports = {
         target: 'http://localhost:8000'
       },
       '/rt/*': {
-        target: 'http://localhost:8080'
+        target: 'http://localhost:8000'
       },
       '/local-file/*': {
-        target: 'http://localhost:8080'
+        target: 'http://localhost:8000'
       }
     }
   },

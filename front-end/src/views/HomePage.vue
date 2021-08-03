@@ -12,7 +12,7 @@
           </div>
           <div class="board add list-inline-item" @click="createBoard()">
             <font-awesome-icon icon="plus" />
-            <div>Create New Board</div>
+            <div>{{ $t('homePage.createNewBoard') }}</div>
           </div>
         </div>
       </div>
@@ -26,13 +26,13 @@
           </div>
           <div class="board add list-inline-item" @click="createBoard(team)">
             <font-awesome-icon icon="plus" />
-            <div>Creat new Board</div>
+            <div>{{ $t('homePage.createNewBoard') }}</div>
           </div>
         </div>
       </div>
 
       <div class="create-team-wrapper">
-        <button class="btn btn-link" @click="createTeam()">+ Create New Team</button>
+        <button class="btn btn-link" @click="createTeam()">+ {{ $t('homePage.createNewTeam') }}</button>
       </div>
     </div>
     <CreateBoardModal
@@ -94,3 +94,61 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .boards-container {
+    padding: 0 35px;
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      font-weight: 400;
+    }
+
+    .boards-section {
+      margin: 30px 10px;
+
+      .boards {
+        margin-top: -20px;
+
+        .board {
+          width: 270px;
+          height: 110px;
+          border-radius: 5px;
+          background-color: #377EF6;
+          color: #fff;
+          padding: 15px;
+          margin-right: 10px;
+          margin-top: 20px;
+          cursor: pointer;
+
+          h3 {
+            font-size: 16px;
+          }
+
+          p {
+            line-height: 1.2;
+            font-size: 90%;
+            font-weight: 100;
+            color: rgba(255, 255, 255, 0.70)
+          }
+        }
+
+        .add {
+          background-color: #f4f4f4;
+          color: #666;
+          text-align: center;
+          padding-top: 30px;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .create-team-wrapper {
+      .btn-link {
+        color: #666;
+        text-decoration: underline;
+      }
+    }
+  }
+</style>

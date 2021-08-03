@@ -19,6 +19,7 @@
 		<p6spy.version>3.9.1</p6spy.version>
 		<im4java.version>1.4.0</im4java.version>
 		<aws-s3.version>1.11.538</aws-s3.version>
+		<codehaus.version>3.0.0</codehaus.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -55,6 +56,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -140,22 +145,86 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<!--
+          Maven profile for local e2e test
+          To include this profile, run `mvn clean install -P local-e2e`
+        -->
+		<profile>
+			<id>local-e2e</id>
+			<build>
+				<plugins>
+					<!-- Plugin for start app in local e2e -->
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>pre local-e2e test</id>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<!-- Set active Spring Profile -->
+									<profiles>
+										<profile>e2e</profile>
+									</profiles>
+								</configuration>
+							</execution>
+							<execution>
+								<id>post local-e2e test</id>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Plugin for execute local e2e -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>${codehaus.version}</version>
+						<executions>
+							<execution>
+								<id>front-end local-e2e test</id>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<phase>integration-test</phase>
+								<configuration>
+									<executable>npm</executable>
+									<arguments>
+										<argument>run</argument>
+										<argument>test:local-e2e</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+						<configuration>
+							<workingDirectory>${basedir}/front-end</workingDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
 				<executions>
 					<execution>
-						<id>pre integration test</id>
 						<goals>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>post integration test</id>
-						<goals>
-							<goal>stop</goal>
+							<goal>build-info</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -163,7 +232,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>${codehaus.version}</version>
 				<executions>
 					<execution>
 						<id>font-end install</id>
@@ -206,20 +275,6 @@
 							</arguments>
 						</configuration>
 					</execution>
-					<execution>
-						<id>front-end e2e test</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<phase>integration-test</phase>
-						<configuration>
-							<executable>npm</executable>
-							<arguments>
-								<argument>run</argument>
-								<argument>test:integration</argument>
-							</arguments>
-						</configuration>
-					</execution>
 				</executions>
 				<configuration>
 					<workingDirectory>${basedir}/front-end</workingDirectory>
@@ -227,7 +282,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>copy front-end template</id>
@@ -240,13 +294,15 @@
 							<resources>
 								<resource>
 									<directory>front-end/dist</directory>
-									<includes><include>index.html</include></includes>
+									<includes>
+										<include>index.html</include>
+									</includes>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
 					<execution>
-						<id>copy front-end static assets</id>
+						<id>copy front-end assets</id>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
@@ -256,7 +312,9 @@
 							<resources>
 								<resource>
 									<directory>front-end/dist</directory>
-									<excludes><exclude>index.html</exclude></excludes>
+									<excludes>
+										<exclude>index.html</exclude>
+									</excludes>
 								</resource>
 							</resources>
 						</configuration>
@@ -300,13 +358,11 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.1.0</version>
 				<configuration>
 					<filesets>
 						<fileset>
-							<directory>${basedir}/src/main/resources/static</directory>
+							<directory>${basedir}/src/main/resources/static/static</directory>
 						</fileset>
 						<fileset>
 							<directory>${basedir}/src/main/resources/templates</directory>

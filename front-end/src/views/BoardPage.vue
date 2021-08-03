@@ -63,8 +63,7 @@
                            placeholder="Type list name here"/>
                   </div>
                   <button type="submit" class="btn btn-sm btn-primary">Add List</button>
-                  <button type="button" class="btn btn-sm btn-link btn-cancel" @click="closeAddListForm()">Cancel
-                  </button>
+                  <button type="button" class="btn btn-sm btn-link btn-cancel" @click="closeAddListForm()">Cancel</button>
                 </form>
               </div>
             </draggable>
@@ -74,8 +73,7 @@
     </div>
     <AddMemberModal
       :boardId="board.id"
-      @added="onMemberAdded"
-    />
+      @added="onMemberAdded"/>
     <CardModal
       :card="openedCard"
       :cardList="focusedCardList"
@@ -88,8 +86,8 @@
 <script>
 import draggable from 'vuedraggable'
 import { Modal } from 'bootstrap'
-import PageHeader from '@/components/PageHeader.vue'
-import AddMemberModal from '@/modals/AddMemberModal.vue'
+import PageHeader from '@/components/PageHeader'
+import AddMemberModal from '@/modals/AddMemberModal'
 import notify from '@/utils/notify'
 import boardService from '@/services/boards'
 import cardListService from '@/services/card-lists'
@@ -111,6 +109,11 @@ export default {
       addMemberModal: null,
       cardModalEl: null,
       openedCard: {}
+    }
+  },
+  computed: {
+    focusedCardList () {
+      return this.cardLists.filter(cardList => cardList.id === this.openedCard.cardListId)[0] || {}
     }
   },
   components: {

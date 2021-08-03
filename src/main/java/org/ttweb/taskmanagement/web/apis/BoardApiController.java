@@ -1,6 +1,5 @@
 package org.ttweb.taskmanagement.web.apis;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +13,11 @@ import org.ttweb.taskmanagement.domain.application.TeamService;
 import org.ttweb.taskmanagement.domain.application.commands.AddBoardMemberCommand;
 import org.ttweb.taskmanagement.domain.application.commands.CreateBoardCommand;
 import org.ttweb.taskmanagement.domain.common.file.FileUrlCreator;
-import org.ttweb.taskmanagement.domain.common.security.CurrentUser;
 import org.ttweb.taskmanagement.domain.model.board.Board;
 import org.ttweb.taskmanagement.domain.model.board.BoardId;
 import org.ttweb.taskmanagement.domain.model.card.Card;
 import org.ttweb.taskmanagement.domain.model.cardlist.CardList;
 import org.ttweb.taskmanagement.domain.model.team.Team;
-import org.ttweb.taskmanagement.domain.model.user.SimpleUser;
 import org.ttweb.taskmanagement.domain.model.user.User;
 import org.ttweb.taskmanagement.domain.model.user.UserNotFoundException;
 import org.ttweb.taskmanagement.web.payload.AddBoardMemberPayload;

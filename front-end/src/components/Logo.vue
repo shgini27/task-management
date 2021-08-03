@@ -1,6 +1,6 @@
 <template>
   <div class="logo-wrapper">
-    <img class="logo" src="../assets/logo.png">
+    <img class="logo" src="/images/logo.png">
     <div class="tagline">{{ $t("logo.tagLine") }}</div>
   </div>
 </template>

@@ -16,7 +16,7 @@ public class SimpleLogoutSuccessHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
-            Authentication authentication) throws IOException, ServletException {
+            Authentication authentication) throws IOException {
         httpServletResponse.setStatus(HttpStatus.OK.value());
         JsonUtils.write(httpServletResponse.getWriter(), ApiResult.message("logged-out"));
     }

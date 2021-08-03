@@ -2,17 +2,17 @@
   <div class="page-header d-flex align-content-center">
     <div class="logo" @click="goHome()">
       <font-awesome-icon icon="home" class="home-icon" />
-      <img src="../assets/logo.png">
+      <img src="/images/logo.png">
     </div>
     <div class="boards-menu-toggle">
       <div class="dropdown">
         <button class="btn dropdown-toggle" type="button" id="boardsMenu"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Menu Level
+          {{ $t('header.boardsMenu.label') }}
         </button>
         <div class="dropdown-menu" aria-labelledby="boardsMenu">
           <div v-show="!hasBoards" class="dropdown-item">
-            No Board
+            {{ $t('header.boardsMenu.noBoard') }}
           </div>
           <div v-show="hasBoards">
             <h6 class="dropdown-header" v-show="personalBoards.length">{{ $t("header.personalBoards") }}</h6>
@@ -112,7 +112,6 @@ export default {
         margin-left: 5px;
         margin-top: 6px;
         width: 80px;
-        // vertical-align: bottom;
       }
     }
 

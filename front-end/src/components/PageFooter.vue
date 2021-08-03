@@ -2,9 +2,9 @@
     <footer class="footer">
       <span class="copyright">&copy; 2021 ttweb.org</span>
       <ul class="list-links list-inline float-right">
-        <li class="list-inline-item"><a href="#">About</a></li>
-        <li class="list-inline-item"><a href="#">Terms of Service</a></li>
-        <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
+        <li class="list-inline-item"><a href="#">{{ $t("pageFooter.about") }}</a></li>
+        <li class="list-inline-item"><a href="#">{{ $t("pageFooter.termOfService") }}</a></li>
+        <li class="list-inline-item"><a href="#">{{ $t("pageFooter.privacyPolicy") }}</a></li>
         <li class="list-inline-item"><a href="https://ttranzit.visualstudio.com/task-management" target="_blank">Azure</a></li>
       </ul>
     </footer>
