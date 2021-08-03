@@ -11,7 +11,7 @@ public class UserRegisteredEventHandler {
     private final Log logger = LogFactory.getLog(UserRegisteredEventHandler.class);
     @EventListener(UserRegisteredEvent.class)
     public void handleEvent(UserRegisteredEvent event){
-        logger.debug("Handling " + event.getUser().getEmailAddress() + " registration event");
+        logger.debug("Handling " + event.getUserId() + " registration event from IP: " + event.getIpAddress());
         // This is only a demonstration of the domain event listener
     }
 }
