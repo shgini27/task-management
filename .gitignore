@@ -37,3 +37,6 @@ build/
 
 ### Spring Boot Dev Config ###
 src/main/resources/application-dev.properties
+
+# Log files
+*.log
