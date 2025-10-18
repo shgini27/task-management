@@ -22,12 +22,12 @@
             </div>
           </div>
           <div class="board-body">
-            <draggable v-model="cardLists" class="list-container" @ended="onCardListDragEnded"
+            <draggable v-model="cardLists" class="list-container" @end="onCardListDragEnded"
                        :options="{handle: '.list-header', animation: 0, scrollSensitivity: 100, touchStartThreshold: 20}">
               <div class="list-wrapper" v-for="cardList in cardLists" :key="cardList.id">
                 <div class="list">
                   <div class="list-header">{{ cardList.name }}</div>
-                  <draggable class="cards" v-model="cardList.cards" @ended="onCardDragEnded"
+                  <draggable class="cards" v-model="cardList.cards" @end="onCardDragEnded"
                              :options="{draggable: '.card-item', group: 'cards', ghostClass: 'ghost-card',
                              animation: 0, scrollSensitivity: 100, touchStartThreshold: 20}"
                              :data-list-id="cardList.id">
@@ -50,7 +50,7 @@
                       </form>
                     </div>
                   </draggable>
-                  <div class="add-card-button" v-show="!cardList.cardForm.open" @click="openAddCardForm()">
+                  <div class="add-card-button" v-show="!cardList.cardForm.open" @click="openAddCardForm(cardList)">
                     + Add a card
                   </div>
                 </div>
@@ -315,7 +315,9 @@ export default {
     },
     openAddCardForm (cardList) {
       // Close other add card form
-      this.cardLists.forEach((cardList) => { cardList.cardForm.open = false })
+      this.cardLists.forEach((item) => {
+        item.cardForm.open = false
+      })
       cardList.cardForm.open = true
       this.focusCardForm(cardList)
     },
@@ -374,7 +376,7 @@ export default {
         })
       })
 
-      cardService.changePositions(positionChanges).catch(error => {
+      cardService.changePosition(positionChanges).catch(error => {
         notify.error(error.message)
       })
     },

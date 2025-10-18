@@ -16,7 +16,7 @@
           </div>
         </div>
       </div>
-      <div class="board-section" v-for="team in teamBoards" :key="team.id">
+      <div class="boards-section" v-for="team in teamBoards" :key="team.id">
         <h2 class="section-title">{{ team.name }}</h2>
         <div class="boards d-flex align-content-start flex-wrap">
           <div class="board list-inline-item" v-for="board in team.boards"

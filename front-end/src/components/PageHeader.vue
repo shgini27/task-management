@@ -15,7 +15,7 @@
             {{ $t('header.boardsMenu.noBoard') }}
           </div>
           <div v-show="hasBoards">
-            <h6 class="dropdown-header" v-show="personalBoards.length">{{ $t("header.personalBoards") }}</h6>
+            <h6 class="dropdown-header" v-show="personalBoards.length">{{ $t("header.boardsMenu.personalBoards") }}</h6>
             <button v-for="board in personalBoards" :key="board.id" @click="openBoard(board)"
                     class="dropdown-item" type="button">{{ board.name }}</button>
             <div v-for="team in teamBoards" :key="'t' + team.id">
@@ -36,7 +36,7 @@
     <div class="profile-menu-toggle">
       <div class="dropdown">
         <button class="btn dropdown-toggle" type="button" id="profileMenu"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{ user.name }}
         </button>
         <div class="dropdown-menu" aria-labelledby="profileMenu">
@@ -50,6 +50,7 @@
 
 <script>
 import 'bootstrap/dist/js/bootstrap.min'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import { mapGetters } from 'vuex'
 import meService from '@/services/me'
 import notify from '@/utils/notify'

@@ -24,7 +24,7 @@ public class HibernateBoardRepository extends HibernateSupport<Board> implements
                 "WHERE bm.user_id = :userId";
 
         NativeQuery<Board> query = getSession().createNativeQuery(sql, Board.class);
-        query.setParameter("userId", userId);
+        query.setParameter("userId", userId.value());
         return query.list();
     }
 

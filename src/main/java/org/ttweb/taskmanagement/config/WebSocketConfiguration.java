@@ -20,7 +20,12 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         webSocketHandlerRegistry.addHandler(requestDispatcher, "/rt")
-                .setAllowedOrigins("http://localhost:3000", "http://localhost:8000")
+                .setAllowedOrigins(
+                        "http://localhost:3000",
+                        "http://localhost:8000",
+                        "http://192.168.4.181:3000",
+                        "http://192.168.4.181:8000"
+                )
                 .withSockJS();
     }
 }

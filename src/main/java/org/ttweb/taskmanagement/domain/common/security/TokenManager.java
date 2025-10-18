@@ -1,5 +1,7 @@
 package org.ttweb.taskmanagement.domain.common.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -37,7 +39,8 @@ public class TokenManager {
      */
     public UserId verifyJwt(String jws){
         // String userIdValue = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jws).getBody().getSubject();
-        String userIdValue = Jwts.parserBuilder().setSigningKey(secretKey).requireSubject(jws).toString();
-        return new UserId(Long.parseLong(userIdValue));
+        Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jws);
+        String userId = claims.getBody().getSubject();
+        return new UserId(Long.parseLong(userId));
     }
 }

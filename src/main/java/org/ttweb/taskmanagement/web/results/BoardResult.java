@@ -30,13 +30,13 @@ public class BoardResult {
         }
 
         List<CardListData> cardListsData = new ArrayList<>();
-        Map<CardListId, List<Card>> cardsByList = new HashMap<>();
+        Map<Long, List<Card>> cardsByList = new HashMap<>();
         for (Card card: cards) {
-            cardsByList.computeIfAbsent(card.getCardListId(), k -> new ArrayList<>()).add(card);
+            cardsByList.computeIfAbsent(card.getCardListId().value(), k -> new ArrayList<>()).add(card);
         }
 
         for (CardList cardList: cardLists) {
-            cardListsData.add(new CardListData(cardList, cardsByList.get(cardList.getId()), fileUrlCreator));
+            cardListsData.add(new CardListData(cardList, cardsByList.get(cardList.getId().value()), fileUrlCreator));
         }
 
         ApiResult result = ApiResult.blank()

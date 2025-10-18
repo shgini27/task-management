@@ -52,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<User> findMembers(BoardId boardId) {
-        return findMembers(boardId);
+        return boardMemberRepository.findMembers(boardId);
     }
 
     @Override

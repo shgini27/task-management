@@ -10,7 +10,7 @@ public class FileStorageResolver {
     private ApplicationContext applicationContext;
 
     public FileStorageResolver(
-            @Value("app.file-storage.active") String activeStorageName,
+            @Value("${app.file-storage.active}") String activeStorageName,
             ApplicationContext applicationContext){
         this.activeStorageName = activeStorageName;
         this.applicationContext = applicationContext;
